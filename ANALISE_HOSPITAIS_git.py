@@ -6,6 +6,7 @@ PR = Paraná
 .dbc = formato compactado utilizado pelo DATASUS.
 
 Sistema de Informações Hospitalares do SUS
+Link: https://datasus.saude.gov.br/transferencia-de-arquivos/#
 
 # COMMAND ----------
 
