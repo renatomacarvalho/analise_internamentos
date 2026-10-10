@@ -261,6 +261,50 @@ conforme as necessidades do projeto.
 -   [ ] Documentação dos resultados e limitações.
 -   [ ] Ampliação do período de análise.
 
+## 📋 Dicionário de Dados: Campos do Arquivo SP (Serviços Profissionais)
+
+| Campo Nativo | Nome Amigável | Descrição / Significado Técnico |
+| :--- | :--- | :--- |
+| **SP_GESTOR** | Código do Gestor | Identifica o gestor público responsável pelo pagamento (estado ou município). |
+| **SP_UF** | Unidade da Federação | Código numérico do Estado (ex: `41` é o Paraná). |
+| **SP_AA** | Ano de Processamento | Ano em que o lote de dados foi processado (ex: `2025`). |
+| **SP_MM** | Mês de Processamento | Mês em que o lote de dados foi processado (ex: `01` para janeiro). |
+| **SP_CNES** | Código CNES | Cadastro Nacional de Estabelecimentos de Saúde (ID único do hospital). |
+| **SP_NAIH** | Número da AIH | Número da Autorização de Internação Hospitalar (chave identificadora do caso). |
+| **SP_PROCREA** | Procedimento Realizado | Código oficial da tabela do SUS para o procedimento principal. |
+| **SP_DTINTER** | Data de Internação | Data em que o paciente deu entrada no hospital (`AAAAMMDD`). |
+| **SP_DTSAIDA** | Data de Saída | Data da alta, óbito ou transferência do paciente (`AAAAMMDD`). |
+| **SP_NUM_PR** | Número do Prestador | Identificador interno do prestador de serviços hospitalares. |
+| **SP_TIPO** | Tipo de Prestador | Classificação jurídica/operacional do tipo de prestador. |
+| **SP_CPFCGC** | CPF/CNPJ do Prestador | Documento de identificação fiscal do estabelecimento ou profissional. |
+| **SP_ATOPROF** | Código do Ato Profissional | Código do procedimento específico realizado pelo profissional durante o caso. |
+| **SP_TP_ATO** | Tipo do Ato | Classificação técnica do tipo de ato (médico, cirúrgico, diagnóstico, etc.). |
+| **SP_QTD_ATO** | Quantidade de Atos | Quantas vezes aquele procedimento específico foi realizado neste registro. |
+| **SP_PTSP** | Pontos do Serviço | Pontuação técnica utilizada para o cálculo de tabelas de honorários. |
+| **SP_NF** | Nota Fiscal | Número do documento fiscal, quando aplicável. |
+| **SP_VALATO** | Valor do Ato Profissional | **O valor em Reais (R\$)** pago pelo SUS por aquele procedimento específico. |
+| **SP_M_HOSP** | Município do Hospital | Código IBGE do município onde o hospital está localizado (ex: `411125`). |
+| **SP_M_PAC** | Município do Paciente | Código IBGE do município onde o paciente reside (analisa fluxos de viagem). |
+| **SP_DES_HOS** | Desconto do Hospital | Valores de descontos aplicados sobre a fatura hospitalar. |
+| **SP_DES_PAC** | Desconto do Paciente | Valores de descontos aplicados referentes ao paciente. |
+| **SP_COMPLEX** | Nível de Complexidade | Grau de complexidade do procedimento (`02` para Média, `03` para Alta). |
+| **SP_FINANC** | Tipo de Financiamento | Bloco de financiamento do SUS de onde saem os recursos (ex: bloco MAC). |
+| **SP_CO_FAEC** | Código FAEC | Código do Fundo de Ações Estratégicas e Compensação. |
+| **SP_PF_CBO** | CBO do Profissional | Código Brasileiro de Ocupações (especialidade médica, ex: `225125`). |
+| **SP_PF_DOC** | Documento do Profissional | CPF ou número de registro do profissional de saúde responsável. |
+| **SP_PJ_DOC** | CNPJ da Pessoa Jurídica | CNPJ do hospital ou da empresa médica terceirizada contratada. |
+| **IN_TP_VAL** | Indicador do Tipo de Valor | Indicador do DATASUS sobre a composição e validação do preço cobrado. |
+| **SEQUENCIA** | Sequência do Registro | Número sequencial para ordenar múltiplos atos dentro de uma mesma AIH. |
+| **REMESSA** | Arquivo de Origem | Nome do arquivo físico enviado pelo gestor (ex: formato `.DTS`). |
+| **SERV_CLA** | Serviço e Classificação | Identifica o tipo de serviço especializado conforme tabela CNES. |
+| **SP_CIDPRI** | CID-10 Principal | **Código Internacional de Doenças** que motivou o ato profissional (ex: `J459`). |
+| **SP_CIDSEC** | CID-10 Secundário | Diagnóstico secundário ou complicações apresentadas no leito. |
+| **SP_QT_PROC** | Qtd de Procedimentos | Quantidade acumulada do procedimento principal validada no processamento. |
+| **SP_U_AIH** | Indicador de Uso da AIH | Controle se o registro representa encerramento ou continuação do caso. |
+| **_rescued_data** | Dados Resgatados | Coluna interna do Spark para capturar dados fora do schema definido. |
+
+
+
 ## 👤 Autor
 
 Projeto de portfólio desenvolvido para praticar e demonstrar
