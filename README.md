@@ -267,8 +267,8 @@ Projeto de portfólio desenvolvido para praticar e demonstrar
 conhecimentos em análise e processamento de dados com Databricks, SQL,
 PySpark e Delta Lake.
 
--   **LinkedIn:** \[adicione aqui o link do seu perfil\]
--   **GitHub:** \[adicione aqui o link do seu perfil ou repositório\]
+-   **LinkedIn:** linkedin.com/in/renatomcarvalho
+-   **GitHub:** https://github.com/renatomacarvalho
 
 ------------------------------------------------------------------------
 
