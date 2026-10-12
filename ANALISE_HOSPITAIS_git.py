@@ -55,7 +55,7 @@ Quais procedimentos tiveram maior volume?
 
 # DBTITLE 1,TOTAL GERAL
 # MAGIC %sql
-# MAGIC select count(*) as qtde
+# MAGIC select count(*) as quantidade_registros
 # MAGIC  from workspace.default.sppr2501
 
 # COMMAND ----------
@@ -68,16 +68,20 @@ Quais procedimentos tiveram maior volume?
 # MAGIC %sql
 # MAGIC select 
 # MAGIC
-# MAGIC CASE DATE_FORMAT(TO_DATE(CAST(SP_DTINTER AS STRING), 'yyyyMMdd'), 'EEEE')
-# MAGIC     WHEN 'Sunday'    THEN '1.Domingo'
-# MAGIC     WHEN 'Monday'    THEN '2.Segunda-feira'
-# MAGIC     WHEN 'Tuesday'   THEN '3.Terça-feira'
-# MAGIC     WHEN 'Wednesday' THEN '4.Quarta-feira'
-# MAGIC     WHEN 'Thursday'  THEN '5.Quinta-feira'
-# MAGIC     WHEN 'Friday'    THEN '6.Sexta-feira'
-# MAGIC     WHEN 'Saturday'  THEN '7.Sábado'
-# MAGIC END AS dia_semana,
-# MAGIC count(*) as quantidade
+# MAGIC     CASE DAYOFWEEK(
+# MAGIC         TO_DATE(CAST(SP_DTINTER AS STRING), 'yyyyMMdd')
+# MAGIC     )
+# MAGIC         WHEN 1 THEN '1. Domingo'
+# MAGIC         WHEN 2 THEN '2. Segunda-feira'
+# MAGIC         WHEN 3 THEN '3. Terça-feira'
+# MAGIC         WHEN 4 THEN '4. Quarta-feira'
+# MAGIC         WHEN 5 THEN '5. Quinta-feira'
+# MAGIC         WHEN 6 THEN '6. Sexta-feira'
+# MAGIC         WHEN 7 THEN '7. Sábado'
+# MAGIC     END AS dia_semana,
+# MAGIC
+# MAGIC     COUNT(*) AS quantidade_registros
+# MAGIC
 # MAGIC  from workspace.default.sppr2501
 # MAGIC  group by all
 # MAGIC  order by 1
@@ -92,18 +96,10 @@ Quais procedimentos tiveram maior volume?
 # DBTITLE 1,10 cidades com mais internaçõ
 # MAGIC %sql
 # MAGIC select 
-# MAGIC SP_M_HOSP  , m.`Nome_Município`,
-# MAGIC count(*) as qtde
+# MAGIC SP_M_HOSP as codigo_municipio , m.`Nome_Município` as municipio,
+# MAGIC count(*) as quantidade_registros
 # MAGIC  from workspace.default.sppr2501 s
 # MAGIC  inner join workspace.default.municipios m on s.SP_M_HOSP = substring(m.`Código Município Completo`,1,6)
 # MAGIC  group by all
 # MAGIC  order by 3 desc
 # MAGIC  limit 10
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT
-# MAGIC     SP_CIDPRI, s.DESCRICAO,sp.*
-# MAGIC FROM sppr2501 sp 
-# MAGIC inner join cid10_subcategorias s on s.SUBCAT = sp.SP_CIDPRI
