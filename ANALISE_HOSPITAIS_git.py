@@ -27,9 +27,38 @@ Quais procedimentos tiveram maior volume?
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Qual a quantidade geral de internações?
+
+# COMMAND ----------
+
+# DBTITLE 1,TOTAL GERAL
 # MAGIC %sql
 # MAGIC select count(*) as qtde
 # MAGIC  from workspace.default.sppr2501
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Quais dias das semana tem mais registro de entrada de internações?
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select 
+# MAGIC
+# MAGIC CASE DATE_FORMAT(TO_DATE(CAST(SP_DTINTER AS STRING), 'yyyyMMdd'), 'EEEE')
+# MAGIC     WHEN 'Sunday'    THEN '1.Domingo'
+# MAGIC     WHEN 'Monday'    THEN '2.Segunda-feira'
+# MAGIC     WHEN 'Tuesday'   THEN '3.Terça-feira'
+# MAGIC     WHEN 'Wednesday' THEN '4.Quarta-feira'
+# MAGIC     WHEN 'Thursday'  THEN '5.Quinta-feira'
+# MAGIC     WHEN 'Friday'    THEN '6.Sexta-feira'
+# MAGIC     WHEN 'Saturday'  THEN '7.Sábado'
+# MAGIC END AS dia_semana,
+# MAGIC count(*) as quantidade
+# MAGIC  from workspace.default.sppr2501
+# MAGIC  group by all
 
 # COMMAND ----------
 
