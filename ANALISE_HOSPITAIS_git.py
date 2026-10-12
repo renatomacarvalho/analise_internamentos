@@ -62,6 +62,10 @@ Quais procedimentos tiveram maior volume?
 
 # COMMAND ----------
 
+
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC CREATE OR REPLACE TEMP VIEW aih_permanencia AS
 # MAGIC SELECT
