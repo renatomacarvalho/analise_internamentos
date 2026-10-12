@@ -1,320 +1,245 @@
-# 🏥 Análise de Internações Hospitalares --- DATASUS
+# 🏥 Análise de Dados Hospitalares — DATASUS
 
 ## 📌 Sobre o projeto
 
-Este projeto tem como objetivo explorar dados públicos de internações
-hospitalares do Sistema Único de Saúde (SUS), disponibilizados pelo
-Departamento de Informação e Informática do SUS (DATASUS).
+Este projeto tem como objetivo explorar dados públicos do Sistema Único de Saúde (SUS), disponibilizados pelo Departamento de Informação e Informática do SUS (DATASUS), utilizando o Databricks e SQL.
 
-A proposta é desenvolver um fluxo de ingestão e tratamento de dados
-utilizando Databricks, SQL, PySpark e Delta Lake, transformando arquivos
-públicos em uma base estruturada para análises.
+A análise utiliza inicialmente o arquivo `SPPR2501`, referente ao Paraná (PR), competência janeiro de 2025, com registros do tipo **SP — Serviços Profissionais**, associado ao sistema SIH/SUS.
 
-O projeto utiliza dados do **Sistema de Informações Hospitalares do SUS
-(SIH/SUS)**, com foco inicial nos arquivos **RD --- AIH Reduzida**, por
-local de internação.
+O projeto busca explorar os dados, identificar padrões, construir indicadores e documentar as etapas de análise, respeitando a estrutura e as limitações da fonte original.
 
-> **Status:** em desenvolvimento. Os resultados, métricas e conclusões
-> serão incluídos após a ingestão e validação dos dados.
+**Status:** primeira versão em desenvolvimento, com leitura dos arquivos CSV, criação de views e consultas exploratórias implementadas.
 
 ## 🎯 Objetivos
 
--   Obter dados públicos de internações hospitalares na fonte oficial do
-    DATASUS.
--   Construir uma pipeline de dados no Databricks.
--   Aplicar uma arquitetura de duas camadas: **Bronze** e **Silver**.
--   Preservar os dados brutos para permitir auditoria e reprocessamento.
--   Tratar e padronizar os dados com SQL e/ou PySpark.
--   Validar a qualidade dos dados antes de utilizá-los nas análises.
--   Criar consultas e indicadores que ajudem a compreender os padrões
-    das internações hospitalares.
--   Documentar as decisões, limitações e resultados do projeto.
+- Explorar dados públicos do DATASUS.
+- Utilizar o Databricks para leitura e análise dos arquivos.
+- Criar views SQL para facilitar a consulta dos dados.
+- Investigar a distribuição dos registros por período e município.
+- Identificar os códigos de procedimentos mais frequentes.
+- Explorar os campos disponíveis para construir novos indicadores.
+- Documentar as consultas, os resultados e as limitações da análise.
+- Evoluir o projeto gradualmente, conforme a validação dos dados.
 
 ## 🗂️ Fonte dos dados
 
-**Fonte:** DATASUS --- Ministério da Saúde\
-**Sistema:** Sistema de Informações Hospitalares do SUS (SIH/SUS)\
-**Arquivo:** RD --- AIH Reduzida\
-**Recorte inicial:** Paraná (PR), começando pela competência janeiro de
-2025\
-**Expansão prevista:** outros meses, anos e unidades da Federação, após
-validar o processo inicial.
+- **Fonte:** DATASUS — Ministério da Saúde.
+- **Sistema:** Sistema de Informações Hospitalares do SUS (SIH/SUS).
+- **Arquivo de origem:** `SPPR2501.dbc`, convertido para CSV para leitura no Databricks.
+- **Tipo de registro:** SP — Serviços Profissionais.
+- **Abrangência inicial:** Paraná (PR).
+- **Competência:** janeiro de 2025.
 
 Links oficiais:
 
--   [Produção Hospitalar ---
-    SIH/SUS](https://datasus.saude.gov.br/acesso-a-informacao/producao-hospitalar-sih-sus/)
--   [Transferência de Arquivos do
-    DATASUS](https://datasus.saude.gov.br/transferencia-de-arquivos2/)
+- [Produção Hospitalar — SIH/SUS](https://datasus.saude.gov.br/acesso-a-informacao/producao-hospitalar-sih-sus/)
+- [Transferência de Arquivos do DATASUS](https://datasus.saude.gov.br/transferencia-de-arquivos2/)
 
-### Por que utilizar dados por local de internação?
+### Sobre o arquivo analisado
 
-O recorte por local de internação considera a localização do
-estabelecimento onde ocorreu a internação. Essa escolha é adequada para
-explorar a distribuição da produção hospitalar por território.
+O arquivo utilizado nesta versão contém campos como `SP_PROCREA`, `SP_QT_PROC`, `SP_CIDPRI`, `SP_M_HOSP` e `SP_M_PAC`.
 
-A competência e as regras de contabilização devem ser consideradas na
-interpretação dos resultados. Os registros administrativos de AIH não
-devem ser tratados automaticamente como uma contagem perfeita de pessoas
-únicas.
+A identificação do arquivo como SP é importante para interpretar corretamente os resultados. **Os registros de Serviços Profissionais não devem ser tratados automaticamente como internações únicas**, pois a granularidade do arquivo precisa ser considerada em cada indicador.
 
 ## 🧰 Tecnologias e ferramentas
 
--   **Databricks:** ambiente para desenvolvimento e processamento dos
-    dados.
--   **Apache Spark / PySpark:** leitura, transformação e validação dos
-    dados.
--   **SQL:** consultas exploratórias e construção de indicadores.
--   **Delta Lake:** armazenamento das tabelas em formato Delta.
--   **Git e GitHub:** versionamento do código e documentação.
+- **Databricks:** ambiente de desenvolvimento e execução das consultas.
+- **SQL:** leitura, agregação e análise exploratória dos dados.
+- **Apache Spark:** mecanismo de processamento utilizado pelo Databricks.
+- **CSV:** formato dos arquivos utilizados na leitura atual.
+- **Git e GitHub:** versionamento do código e documentação do projeto.
 
-As ferramentas serão utilizadas conforme a necessidade de cada etapa; o
-projeto não depende de usar PySpark e SQL em todas as transformações.
+Nesta primeira versão, a leitura dos dados é feita com `read_files`, e as consultas utilizam views SQL. A implementação de transformações com PySpark, persistência em Delta Lake e camadas de dados poderá ser considerada em etapas futuras.
 
-## 🏗️ Arquitetura da solução
+## 🔄 Fluxo atual de processamento
 
-A pipeline utilizará duas camadas de dados. A camada Gold não será
-criada nesta versão inicial: as análises serão realizadas diretamente
-sobre a Silver por meio de consultas SQL.
+O fluxo implementado nesta versão é:
 
-``` text
-        DATASUS — SIH/SUS
-                 |
-                 v
-          Arquivos RD
-                 |
-                 v
-        +----------------+
-        |     BRONZE     |
-        | Dados brutos   |
-        | Delta Lake     |
-        +----------------+
-                 |
-                 v
-        +----------------+
-        |     SILVER     |
-        | Dados tratados |
-        | Delta Lake     |
-        +----------------+
-                 |
-                 v
-        Consultas SQL
-        Indicadores e análises
+```text
+         Arquivos DATASUS
+                |
+                v
+       Conversão para CSV
+                |
+                v
+        Databricks Volume
+                |
+                v
+       Leitura com read_files
+                |
+          +-----+------+
+          |            |
+          v            v
+    View sppr2501   View municipios
+          |            |
+          +-----+------+
+                |
+                v
+          Consultas SQL
+                |
+                v
+      Indicadores e análises
 ```
 
-### 🥉 Bronze --- dados brutos
+### Views utilizadas
 
-A Bronze será responsável por armazenar os dados de origem em uma
-estrutura persistente no Databricks.
+**`workspace.default.sppr2501`**
 
-Princípios desta camada:
+View criada a partir do arquivo `SPPR2501.csv`, utilizando leitura com cabeçalho e inferência de esquema.
 
--   Preservar os valores e campos originais sempre que possível.
--   Registrar a origem e a competência do arquivo.
--   Evitar aplicar regras analíticas ou excluir registros sem
-    documentação.
--   Permitir rastreabilidade e reprocessamento.
--   Utilizar Delta Lake para persistência, quando os dados já estiverem
-    preparados para leitura e gravação nesse formato.
+**`workspace.default.municipios`**
 
-A forma de ingestão dependerá do formato disponibilizado pelo DATASUS.
-Arquivos compactados ou em formato específico poderão exigir uma etapa
-de extração ou conversão antes da gravação em Delta.
+View criada a partir do arquivo `RELATORIO_DTB_BRASIL_MUNICIPIO.csv`, utilizado como referência para análises geográficas.
 
-### 🥈 Silver --- dados tratados
+As views facilitam a consulta dos dados, mas não representam, por si só, tabelas persistidas em Delta Lake.
 
-A Silver será a camada de dados preparados para consultas e análises.
+## 📊 Análises implementadas
 
-Transformações previstas:
+### 1. Quantidade geral de registros
 
--   Conferir o esquema e os tipos de dados.
--   Padronizar nomes de colunas, quando apropriado.
--   Tratar datas e campos numéricos.
--   Identificar valores nulos, inválidos e inconsistentes.
--   Verificar possíveis duplicidades, sem removê-las automaticamente sem
-    entender a regra de negócio.
--   Validar códigos geográficos e demais códigos categóricos.
--   Documentar as regras aplicadas e as limitações encontradas.
+Consulta utilizada para identificar o volume total de linhas no arquivo:
 
-Os campos e as transformações finais serão definidos após a inspeção do
-arquivo real e do respectivo dicionário de dados. Nenhuma coluna será
-presumida antes dessa validação.
-
-## 📊 Perguntas de análise
-
-Após validar os campos disponíveis, o projeto buscará responder a
-perguntas como:
-
--   Como varia o volume de internações ao longo das competências?
--   Quais municípios ou estabelecimentos concentram maior volume, se
-    essas dimensões estiverem disponíveis?
--   Como se distribuem as internações por estado ou região, conforme a
-    abrangência dos arquivos carregados?
--   Qual é o valor aprovado associado às internações, caso o campo
-    esteja disponível?
--   Qual é o tempo de permanência hospitalar, se for possível calculá-lo
-    com os campos existentes?
--   Quais são as principais causas de internação, caso os códigos CID e
-    uma tabela de referência adequada sejam incorporados?
--   Como os indicadores mudam entre períodos?
-
-As perguntas serão refinadas de acordo com o conteúdo e a granularidade
-efetiva dos dados.
-
-## 📈 Indicadores planejados
-
-Os indicadores abaixo são possibilidades a validar após a inspeção do
-esquema:
-
--   Quantidade de registros/AIHs, com definição explícita do que está
-    sendo contado.
--   Evolução mensal e anual.
--   Distribuição geográfica das internações.
--   Valores aprovados e valor médio, se disponível.
--   Permanência hospitalar média, se os campos permitirem um cálculo
-    consistente.
--   Distribuição por causa de internação, caso a dimensão CID-10 seja
-    incorporada.
-
-**Importante:** quantidade de registros, quantidade de AIHs e quantidade
-de pessoas não são necessariamente medidas equivalentes. Cada indicador
-terá sua definição documentada.
-
-## 🧪 Qualidade e validação dos dados
-
-A qualidade será avaliada antes de publicar indicadores. As verificações
-previstas incluem:
-
--   Quantidade de registros carregados.
--   Conferência das colunas e dos tipos de dados.
--   Identificação de valores nulos nos campos relevantes.
--   Verificação de datas e valores fora do esperado.
--   Análise de possíveis duplicidades.
--   Comparação de contagens entre origem e camadas, quando aplicável.
--   Registro das regras de tratamento e das limitações.
-
-Os registros não serão excluídos apenas por apresentarem valores
-incomuns: cada regra de limpeza deverá ter uma justificativa
-documentada.
-
-## 📁 Estrutura prevista do repositório
-
-``` text
-analise-internacoes-datasus/
-├── README.md
-├── notebooks/
-│   ├── 01_ingestao_bronze.py
-│   └── 02_tratamento_silver.py
-├── queries/
-│   ├── 01_exploracao_dados.sql
-│   ├── 02_analise_temporal.sql
-│   └── 03_analise_geografica.sql
-└── docs/
-    ├── dicionario_dados.md
-    └── regras_de_tratamento.md
+```sql
+SELECT COUNT(*) AS quantidade_registros
+FROM workspace.default.sppr2501;
 ```
 
-Esta é uma estrutura planejada. Os arquivos serão adicionados ao
-repositório à medida que forem desenvolvidos; a organização poderá mudar
-conforme as necessidades do projeto.
+**Resultado:** 1.214.393 registros.
 
-## 🚀 Etapas de desenvolvimento
+Essa métrica representa a quantidade de linhas do arquivo analisado, não necessariamente o número de internações únicas, pessoas ou procedimentos realizados.
 
-1.  Selecionar e baixar um arquivo RD na página oficial do DATASUS.
-2.  Verificar formato, conteúdo, tamanho e dicionário de dados.
-3.  Preparar o arquivo para leitura no Databricks.
-4.  Criar a tabela Delta da camada Bronze.
-5.  Implementar o tratamento e as validações da Silver.
-6.  Executar consultas exploratórias em SQL.
-7.  Construir indicadores e documentar os resultados.
-8.  Ampliar o período e a abrangência geográfica, se necessário.
-9.  Publicar exemplos de consultas, resultados e conclusões no
-    repositório.
+### 2. Distribuição por dia da semana
+
+Análise da distribuição dos registros conforme o dia da semana associado ao campo `SP_DTINTER`.
+
+O objetivo é observar como os registros se distribuem entre os dias da semana.
+
+A interpretação depende da confirmação do significado do campo no layout oficial e da validade das datas.
+
+### 3. Distribuição geográfica por município
+
+Análise dos municípios associados ao campo `SP_M_HOSP`, utilizando a tabela de referência municipal.
+
+O objetivo é identificar os municípios com maior quantidade de registros no arquivo.
+
+A associação entre os códigos municipais deve considerar o formato dos códigos, eventuais zeros à esquerda e a correspondência com a tabela de referência.
+
+### 4. Códigos de procedimentos por quantidade registrada
+
+Análise dos dez códigos do campo `SP_PROCREA` com maior soma dos valores registrados em `SP_QT_PROC`.
+
+Consulta utilizada:
+
+```sql
+SELECT
+    SP_PROCREA AS codigo_procedimento,
+    SUM(TRY_CAST(SP_QT_PROC AS DOUBLE))
+        AS quantidade_procedimentos
+FROM workspace.default.sppr2501
+WHERE SP_PROCREA IS NOT NULL
+GROUP BY SP_PROCREA
+ORDER BY quantidade_procedimentos DESC
+LIMIT 10;
+```
+
+Os dez códigos com maior soma na consulta executada foram:
+
+| Código do procedimento | Quantidade registrada |
+|---|---:|
+| `0303010037` | 226.664 |
+| `0303140151` | 133.292 |
+| `0303060212` | 96.429 |
+| `0303040149` | 79.182 |
+| `0415010012` | 78.972 |
+| `0304100021` | 65.538 |
+| `0415020034` | 49.094 |
+| `0303070102` | 44.150 |
+| `0415040035` | 44.103 |
+| `0303170190` | 43.992 |
+
+O resultado permite comparar os códigos com maior quantidade registrada no campo analisado.
+
+**Limitação:** os códigos ainda não estão associados às respectivas descrições textuais. Além disso, a interpretação da soma como quantidade efetiva de procedimentos depende da confirmação da definição oficial de `SP_QT_PROC`.
+
+## 🧪 Verificações realizadas
+
+Foi executada uma consulta exploratória para avaliar o preenchimento e a distribuição numérica do campo `SP_QT_PROC`.
+
+| Indicador | Resultado |
+|---|---:|
+| Total de registros | 1.214.393 |
+| Registros com quantidade preenchida | 1.214.393 |
+| Valores nulos ou inválidos após conversão | 0 |
+| Menor valor | 0 |
+| Maior valor | 609 |
+| Soma dos valores | 2.590.836 |
+
+Essas verificações ajudam a compreender o conteúdo do campo e a identificar possíveis problemas de preenchimento.
+
+A ausência de valores nulos ou inválidos após a conversão não garante, isoladamente, que todos os valores sejam semanticamente corretos. A interpretação definitiva depende do dicionário oficial e das regras da fonte.
+
+## 📚 Dicionário preliminar de dados
+
+A tabela abaixo reúne os principais campos utilizados ou considerados nas análises. As descrições devem ser conferidas com o layout oficial do arquivo antes de serem tratadas como definitivas.
+
+| Campo | Uso ou significado preliminar |
+|---|---|
+| `SP_GESTOR` | Código relacionado ao gestor responsável pelo registro |
+| `SP_UF` | Código da unidade da Federação |
+| `SP_AA` | Campo de ano do arquivo |
+| `SP_MM` | Campo de mês do arquivo |
+| `SP_CNES` | Código associado ao estabelecimento de saúde |
+| `SP_NAIH` | Número relacionado à AIH |
+| `SP_PROCREA` | Código de procedimento utilizado no registro |
+| `SP_DTINTER` | Campo de data associado à internação |
+| `SP_DTSAIDA` | Campo de data associado à saída |
+| `SP_M_HOSP` | Código de município associado ao hospital |
+| `SP_M_PAC` | Código de município associado ao paciente |
+| `SP_CIDPRI` | Código CID principal informado no registro |
+| `SP_CIDSEC` | Código CID secundário informado no registro |
+| `SP_QT_PROC` | Campo numérico utilizado na análise de quantidade, pendente de confirmação documental |
+| `SP_VALATO` | Campo de valor associado ao ato profissional, pendente de confirmação da regra de cálculo |
+| `SP_QTD_ATO` | Campo relacionado à quantidade de atos, pendente de confirmação documental |
+| `_rescued_data` | Campo utilizado pelo mecanismo de leitura do Spark para dados que não se ajustam ao esquema esperado |
+
+Os demais campos serão documentados à medida que forem necessários às análises e suas definições forem verificadas.
 
 ## ⚠️ Limitações e cuidados de interpretação
 
--   O SIH/SUS reúne informações administrativas relacionadas às
-    internações financiadas pelo SUS; não representa automaticamente
-    todas as internações realizadas no país, inclusive as exclusivamente
-    privadas.
--   O significado de cada campo depende do dicionário e das regras
-    oficiais da base.
--   Registros de AIH não devem ser interpretados automaticamente como
-    pessoas únicas.
--   Comparações temporais e geográficas precisam considerar competência,
-    cobertura e possíveis mudanças nos dados.
--   Indicadores de saúde descrevem padrões observados e, isoladamente,
-    não demonstram relações de causa e efeito.
--   Os resultados só serão apresentados após a execução e validação das
-    consultas.
+- A análise inicial utiliza um arquivo e uma competência específicos, não representando automaticamente todo o histórico do SUS.
+- Os registros do arquivo SP não devem ser interpretados automaticamente como internações únicas ou pessoas únicas.
+- A contagem de linhas e a soma de um campo de quantidade são métricas diferentes.
+- O significado dos campos e as regras de contabilização devem ser confirmados no layout oficial.
+- As análises geográficas dependem da correspondência correta entre os códigos municipais e a tabela de referência.
+- Os códigos de procedimentos ainda não possuem descrições textuais associadas nesta versão.
+- A leitura por meio de views não equivale à implementação de uma arquitetura de armazenamento em camadas.
+- Os resultados descrevem os dados observados e, isoladamente, não demonstram relações de causa e efeito.
 
-## 📌 Progresso do projeto
+## 🚀 Próximas etapas
 
--   [x] Definição do tema e da fonte pública.
--   [x] Seleção inicial da base SIH/SUS --- RD.
--   [x] Definição da arquitetura com duas camadas: Bronze e Silver.
--   [ ] Download e validação do primeiro arquivo.
--   [ ] Inspeção do esquema e do dicionário de dados.
--   [ ] Ingestão da camada Bronze no Databricks.
--   [ ] Tratamento e validação da camada Silver.
--   [ ] Consultas SQL e indicadores.
--   [ ] Documentação dos resultados e limitações.
--   [ ] Ampliação do período de análise.
-
-## 📋 Dicionário de Dados: Campos do Arquivo SP (Serviços Profissionais)
-
-| Campo Nativo | Nome Amigável | Descrição / Significado Técnico |
-| :--- | :--- | :--- |
-| **SP_GESTOR** | Código do Gestor | Identifica o gestor público responsável pelo pagamento (estado ou município). |
-| **SP_UF** | Unidade da Federação | Código numérico do Estado (ex: `41` é o Paraná). |
-| **SP_AA** | Ano de Processamento | Ano em que o lote de dados foi processado (ex: `2025`). |
-| **SP_MM** | Mês de Processamento | Mês em que o lote de dados foi processado (ex: `01` para janeiro). |
-| **SP_CNES** | Código CNES | Cadastro Nacional de Estabelecimentos de Saúde (ID único do hospital). |
-| **SP_NAIH** | Número da AIH | Número da Autorização de Internação Hospitalar (chave identificadora do caso). |
-| **SP_PROCREA** | Procedimento Realizado | Código oficial da tabela do SUS para o procedimento principal. |
-| **SP_DTINTER** | Data de Internação | Data em que o paciente deu entrada no hospital (`AAAAMMDD`). |
-| **SP_DTSAIDA** | Data de Saída | Data da alta, óbito ou transferência do paciente (`AAAAMMDD`). |
-| **SP_NUM_PR** | Número do Prestador | Identificador interno do prestador de serviços hospitalares. |
-| **SP_TIPO** | Tipo de Prestador | Classificação jurídica/operacional do tipo de prestador. |
-| **SP_CPFCGC** | CPF/CNPJ do Prestador | Documento de identificação fiscal do estabelecimento ou profissional. |
-| **SP_ATOPROF** | Código do Ato Profissional | Código do procedimento específico realizado pelo profissional durante o caso. |
-| **SP_TP_ATO** | Tipo do Ato | Classificação técnica do tipo de ato (médico, cirúrgico, diagnóstico, etc.). |
-| **SP_QTD_ATO** | Quantidade de Atos | Quantas vezes aquele procedimento específico foi realizado neste registro. |
-| **SP_PTSP** | Pontos do Serviço | Pontuação técnica utilizada para o cálculo de tabelas de honorários. |
-| **SP_NF** | Nota Fiscal | Número do documento fiscal, quando aplicável. |
-| **SP_VALATO** | Valor do Ato Profissional | **O valor em Reais (R\$)** pago pelo SUS por aquele procedimento específico. |
-| **SP_M_HOSP** | Município do Hospital | Código IBGE do município onde o hospital está localizado (ex: `411125`). |
-| **SP_M_PAC** | Município do Paciente | Código IBGE do município onde o paciente reside (analisa fluxos de viagem). |
-| **SP_DES_HOS** | Desconto do Hospital | Valores de descontos aplicados sobre a fatura hospitalar. |
-| **SP_DES_PAC** | Desconto do Paciente | Valores de descontos aplicados referentes ao paciente. |
-| **SP_COMPLEX** | Nível de Complexidade | Grau de complexidade do procedimento (`02` para Média, `03` para Alta). |
-| **SP_FINANC** | Tipo de Financiamento | Bloco de financiamento do SUS de onde saem os recursos (ex: bloco MAC). |
-| **SP_CO_FAEC** | Código FAEC | Código do Fundo de Ações Estratégicas e Compensação. |
-| **SP_PF_CBO** | CBO do Profissional | Código Brasileiro de Ocupações (especialidade médica, ex: `225125`). |
-| **SP_PF_DOC** | Documento do Profissional | CPF ou número de registro do profissional de saúde responsável. |
-| **SP_PJ_DOC** | CNPJ da Pessoa Jurídica | CNPJ do hospital ou da empresa médica terceirizada contratada. |
-| **IN_TP_VAL** | Indicador do Tipo de Valor | Indicador do DATASUS sobre a composição e validação do preço cobrado. |
-| **SEQUENCIA** | Sequência do Registro | Número sequencial para ordenar múltiplos atos dentro de uma mesma AIH. |
-| **REMESSA** | Arquivo de Origem | Nome do arquivo físico enviado pelo gestor (ex: formato `.DTS`). |
-| **SERV_CLA** | Serviço e Classificação | Identifica o tipo de serviço especializado conforme tabela CNES. |
-| **SP_CIDPRI** | CID-10 Principal | **Código Internacional de Doenças** que motivou o ato profissional (ex: `J459`). |
-| **SP_CIDSEC** | CID-10 Secundário | Diagnóstico secundário ou complicações apresentadas no leito. |
-| **SP_QT_PROC** | Qtd de Procedimentos | Quantidade acumulada do procedimento principal validada no processamento. |
-| **SP_U_AIH** | Indicador de Uso da AIH | Controle se o registro representa encerramento ou continuação do caso. |
-| **_rescued_data** | Dados Resgatados | Coluna interna do Spark para capturar dados fora do schema definido. |
-
-
+- [x] Seleção do arquivo inicial do DATASUS.
+- [x] Conversão do arquivo para CSV.
+- [x] Leitura dos arquivos no Databricks.
+- [x] Criação das views `sppr2501` e `municipios`.
+- [x] Consulta da quantidade geral de registros.
+- [x] Análise exploratória por dia da semana.
+- [x] Consulta de registros por município.
+- [x] Ranking de códigos por soma de `SP_QT_PROC`.
+- [x] Verificação inicial do preenchimento de `SP_QT_PROC`.
+- [ ] Confirmar as definições dos campos no layout oficial.
+- [ ] Validar o relacionamento com a tabela de municípios.
+- [ ] Associar códigos CID e procedimentos às respectivas descrições, quando aplicável.
+- [ ] Ampliar as análises e documentar novos resultados.
+- [ ] Avaliar a implementação de tratamento com PySpark e persistência em Delta Lake.
+- [ ] Considerar a expansão para outras competências e unidades da Federação.
 
 ## 👤 Autor
 
-Projeto de portfólio desenvolvido para praticar e demonstrar
-conhecimentos em análise e processamento de dados com Databricks, SQL,
-PySpark e Delta Lake.
+Projeto de portfólio desenvolvido para praticar e demonstrar conhecimentos em análise exploratória de dados, SQL e Databricks, utilizando dados públicos do DATASUS.
 
--   **LinkedIn:** linkedin.com/in/renatomcarvalho
--   **GitHub:** https://github.com/renatomacarvalho
+- **LinkedIn:** https://linkedin.com/in/renatomcarvalho
+- **GitHub:** https://github.com/renatomacarvalho
 
-------------------------------------------------------------------------
+---
 
-*Projeto educacional com dados públicos. A documentação será atualizada
-à medida que a implementação avançar.*
+*Projeto educacional com dados públicos. O código, as análises e a documentação serão aprimorados conforme a validação das informações e a evolução do projeto.*
