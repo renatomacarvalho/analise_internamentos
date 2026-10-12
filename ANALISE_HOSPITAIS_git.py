@@ -40,14 +40,6 @@ Tabela de Municipios TOM.csv
 
 # COMMAND ----------
 
-Quais hospitais concentraram mais internações?
-Quais doenças/CIDs foram mais frequentes?
-Qual foi o custo hospitalar estimado?
-Qual foi o tempo médio de permanência?
-Quais procedimentos tiveram maior volume?
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC Qual a quantidade geral de internações?
 
