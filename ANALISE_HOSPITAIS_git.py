@@ -103,3 +103,20 @@ Quais procedimentos tiveram maior volume?
 # MAGIC  group by all
 # MAGIC  order by 3 desc
 # MAGIC  limit 10
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Top 10 códigos de procedimentos por quantidade registrada
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT
+# MAGIC     SP_PROCREA AS codigo_procedimento,
+# MAGIC     SUM(TRY_CAST(SP_QT_PROC AS DOUBLE)) AS quantidade_procedimentos
+# MAGIC FROM workspace.default.sppr2501
+# MAGIC WHERE SP_PROCREA IS NOT NULL
+# MAGIC GROUP BY SP_PROCREA
+# MAGIC ORDER BY quantidade_procedimentos DESC
+# MAGIC LIMIT 10;
