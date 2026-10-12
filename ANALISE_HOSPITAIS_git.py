@@ -1,6 +1,6 @@
 # Databricks notebook source
-
-SP = dados detalhados de AIH / Produção Hospitalar (SIH/SUS)
+x
+S/P = dados detalhados de AIH / Produção Hospitalar (SIH/SUS)
 PR = Paraná
 2501 = competência 01/2025
 .dbc = formato compactado utilizado pelo DATASUS.
